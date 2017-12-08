@@ -95,8 +95,17 @@ func (b *Bar) Set(n int) error {
 	if n > b.Total {
 		return ErrMaxCurrentReached
 	}
+	b.updateTime()
 	b.current = n
 	return nil
+}
+
+func (b *Bar) updateTime() {
+	var t time.Time
+	if b.TimeStarted == t {
+		b.TimeStarted = time.Now()
+	}
+	b.timeElapsed = time.Since(b.TimeStarted)
 }
 
 // Incr increments the current value by 1, time elapsed to current time and returns true. It returns false if the cursor has reached or exceeds total value.
@@ -108,11 +117,7 @@ func (b *Bar) Incr() bool {
 	if n > b.Total {
 		return false
 	}
-	var t time.Time
-	if b.TimeStarted == t {
-		b.TimeStarted = time.Now()
-	}
-	b.timeElapsed = time.Since(b.TimeStarted)
+	b.updateTime()
 	b.current = n
 	return true
 }
